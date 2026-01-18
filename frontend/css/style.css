@@ -1,0 +1,369 @@
+/* ====================================
+   KANBAN BOARD CSS STYLING
+   Modern, Responsive Layout
+   ==================================== */
+
+/* Reset ve Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ====================================
+   HEADER STYLING
+   ==================================== */
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.6s ease;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    font-weight: 300;
+}
+
+/* ====================================
+   KANBAN BOARD LAYOUT
+   ==================================== */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    animation: fadeIn 0.8s ease;
+}
+
+/* ====================================
+   KANBAN COLUMN STYLING
+   ==================================== */
+.kanban-column {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+}
+
+.kanban-column:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+    transform: translateY(-4px);
+}
+
+/* ====================================
+   COLUMN HEADER STYLING
+   ==================================== */
+.column-header {
+    padding: 24px 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.column-header h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Task Count Badge */
+.task-count {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(10px);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    min-width: 36px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Column Header Colors */
+.todo-header {
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+}
+
+.inprogress-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.done-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* ====================================
+   COLUMN CONTENT AREA
+   ==================================== */
+.column-content {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+/* Custom Scrollbar */
+.column-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.column-content::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.column-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.column-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ====================================
+   TASK CARD STYLING
+   ==================================== */
+.task-card {
+    background: white;
+    padding: 18px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid transparent;
+    cursor: default;
+}
+
+.task-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+}
+
+.task-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Task Card Border Colors */
+.task-card.todo {
+    border-left-color: #f59e0b;
+}
+
+.task-card.inprogress {
+    border-left-color: #3b82f6;
+}
+
+.task-card.done {
+    border-left-color: #10b981;
+}
+
+/* Task Title */
+.task-title {
+    font-size: 15px;
+    color: #1f2937;
+    margin-bottom: 14px;
+    word-wrap: break-word;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+/* Task Actions */
+.task-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Task Buttons */
+.task-btn {
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: fit-content;
+    font-family: inherit;
+}
+
+.task-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task-btn:active {
+    transform: translateY(0);
+}
+
+.btn-start {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-start:hover {
+    background: #2563eb;
+}
+
+.btn-complete {
+    background: #10b981;
+    color: white;
+}
+
+.btn-complete:hover {
+    background: #059669;
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+}
+
+/* ====================================
+   EMPTY STATE
+   ==================================== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+/* Tablet (iPad and similar) */
+@media (max-width: 1024px) {
+    .kanban-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .kanban-column:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Mobile Phones */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .kanban-board {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .kanban-column {
+        min-height: 300px;
+    }
+    
+    .column-header {
+        padding: 18px 16px;
+    }
+    
+    .column-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .column-content {
+        padding: 16px;
+    }
+    
+    .task-actions {
+        flex-direction: column;
+    }
+    
+    .task-btn {
+        width: 100%;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .kanban-column {
+        min-height: 250px;
+    }
+}
+
+/* ====================================
+   ANIMATIONS
+   ==================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
