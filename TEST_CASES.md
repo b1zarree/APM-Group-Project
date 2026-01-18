@@ -24,3 +24,13 @@ Checking how the system handles invalid inputs.
 | T-05 | Empty Input | 1. Leave input field empty.<br>2. Click Add button. | System should not add an empty task. Warning shown. | Pending |
 | T-06 | Long String | 1. Enter a very long text (100+ chars). | Text should wrap correctly in the card, not break layout. | Pending |
 | T-07 | Backend Down | 1. Stop the Python server.<br>2. Try to add a task. | User should see a connection error or alert. | Pending |
+
+## 3. Backend & API Tests
+Technical validation of the REST API endpoints using Swagger UI.
+
+| ID | Test Name | Steps to Reproduce | Expected Result | Status |
+|----|-----------|--------------------|-----------------|--------|
+| B-01 | Direct API Connectivity | 1. Go to http://127.0.0.1:8000/docs.<br>2. Execute "GET /" endpoint. | Returns JSON {"message": "Kanban API is running!"} with status 200 OK. | Pending |
+| B-02 | Data Structure Validation | 1. Execute "GET /tasks" via Swagger UI. | Returns a valid JSON list [{"id": 1, ...}], not an HTML error page. | Pending |
+| B-03 | Manual Data Integrity | 1. Add a task via Swagger (POST /tasks).<br>2. Open "backend/tasks.json" file in VS Code. | The new task should be physically visible in the raw JSON file. | Pending |
+| B-04 | Invalid Data Rejection | 1. Try to POST a task without a "title" field via Swagger. | Server returns 422 Unprocessable Entity (Pydantic validation blocks it). | Pending |
