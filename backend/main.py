@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException  # HTTPException added
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -64,3 +65,20 @@ def create_task(task_input: TaskInput):
         assignee=task_input.assignee
     )
     return new_task
+
+
+# --- Endpoint 4: Delete Task (DELETE) ---
+@app.delete("/tasks/{task_id}")
+def delete_task(task_id: int):
+    """
+    Removes a task from the database by its ID.
+    Example URL: DELETE /tasks/1
+    """
+    # Call the database manager to delete the task
+    success = db_manager.delete_task(task_id)
+
+    # If the task ID does not exist, raise a 404 error
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return {"message": "Task deleted successfully", "id": task_id}
