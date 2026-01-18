@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board - Görev Yönetimi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>📋 Kanban Board</h1>
+            <p class="subtitle">Görevlerinizi kolayca yönetin</p>
+        </header>
+
+        <!-- Kanban Columns: To Do, In Progress, Done -->
+        <div class="kanban-board">
+            <!-- To Do Column -->
+            <div class="kanban-column">
+                <div class="column-header todo-header">
+                    <h2>📝 To Do</h2>
+                    <span class="task-count" id="todoCount">0</span>
+                </div>
+                <div class="column-content" id="todoColumn">
+                    <!-- Tasks will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- In Progress Column -->
+            <div class="kanban-column">
+                <div class="column-header inprogress-header">
+                    <h2>⚡ In Progress</h2>
+                    <span class="task-count" id="inprogressCount">0</span>
+                </div>
+                <div class="column-content" id="inprogressColumn">
+                    <!-- Tasks will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Done Column -->
+            <div class="kanban-column">
+                <div class="column-header done-header">
+                    <h2>✅ Done</h2>
+                    <span class="task-count" id="doneCount">0</span>
+                </div>
+                <div class="column-content" id="doneColumn">
+                    <!-- Tasks will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
