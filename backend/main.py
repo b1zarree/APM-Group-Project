@@ -82,3 +82,20 @@ def delete_task(task_id: int):
         raise HTTPException(status_code=404, detail="Task not found")
 
     return {"message": "Task deleted successfully", "id": task_id}
+
+
+# --- Endpoint 5: Update Task Status (PATCH) ---
+@app.patch("/tasks/{task_id}/status")
+def update_task_status(task_id: int, status: str):
+    """
+    Updates the status of a specific task (e.g., moving from 'To Do' to 'Done').
+    Example URL: PATCH /tasks/1/status?status=Done
+    """
+    # Call the database manager to update the task status
+    success = db_manager.update_task_status(task_id, status)
+
+    # If the task ID is not found, raise a 404 error
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return {"message": "Status updated successfully", "id": task_id, "new_status": status}
