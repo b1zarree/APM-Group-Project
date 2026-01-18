@@ -3,7 +3,7 @@
    ==================================== */
 
 // API Base URL
-const API_URL = 'http://127.0.0.1:8000/tasks';
+const API_URL = 'http://127.0.0.1:5000/api/tasks';
 
 // DOM Elements - Columns
 const todoColumn = document.getElementById('todoColumn');
@@ -81,7 +81,7 @@ async function fetchTasks() {
         
     } catch (error) {
         console.error('❌ Error fetching tasks:', error);
-        showError('Failed to load tasks. Make sure the backend is running on http://127.0.0.1:8000');
+        showError('Failed to load tasks. Make sure the backend is running on http://127.0.0.1:5000');
     }
 }
 
