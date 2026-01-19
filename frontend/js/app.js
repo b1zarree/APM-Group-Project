@@ -1,5 +1,5 @@
 /* ====================================
-   KANBAN BOARD - FULL LOGIC (FIXED)
+   KANBAN BOARD - FULL LOGIC (WITH ALERTS FOR T-07)
    ==================================== */
 
 // API Base URL
@@ -20,9 +20,6 @@ const doneCount = document.getElementById('doneCount');
 /* ====================================
    STATUS MAPPING (Backend ↔ Frontend)
    ==================================== */
-
-// Backend uses: "To Do", "In Progress", "Done"
-// Frontend uses: "todo", "inprogress", "done"
 
 function normalizeStatus(backendStatus) {
     const mapping = {
@@ -127,9 +124,11 @@ async function addNewTask() {
             fetchTasks();
         } else {
             console.error("❌ Add failed:", await response.text());
+            alert("Failed to add task. Server might be busy.");
         }
     } catch (error) {
         console.error('❌ Error adding task:', error);
+        alert("Connection Error: Could not connect to the backend. Is the server running?");
     }
 }
 
@@ -147,21 +146,21 @@ async function deleteTask(id) {
             fetchTasks();
         } else {
             console.error("❌ Delete failed:", await response.text());
+            alert("Could not delete task.");
         }
     } catch (error) {
         console.error('❌ Error deleting task:', error);
+        alert("Connection Error: Could not delete task. Please check your connection.");
     }
 }
 
-// 4. PATCH - Update Task Status (FIXED!)
+// 4. PATCH - Update Task Status
 async function updateTaskStatus(id, newFrontendStatus) {
-    // Convert frontend status to backend format
     const backendStatus = toBackendStatus(newFrontendStatus);
     
     console.log(`🔄 Updating task #${id}: ${newFrontendStatus} → ${backendStatus}`);
     
     try {
-        // FIXED: Using PATCH method with query parameter
         const response = await fetch(`${API_URL}/${id}/status?status=${encodeURIComponent(backendStatus)}`, {
             method: 'PATCH'
         });
@@ -171,9 +170,11 @@ async function updateTaskStatus(id, newFrontendStatus) {
             fetchTasks();
         } else {
             console.error("❌ Update failed:", await response.text());
+            alert("Could not update task status.");
         }
     } catch (error) {
         console.error('❌ Error updating status:', error);
+        alert("Connection Error: Could not update status. Changes may not be saved.");
     }
 }
 
@@ -182,10 +183,7 @@ async function updateTaskStatus(id, newFrontendStatus) {
    ==================================== */
 
 function renderTask(task) {
-    // Normalize status from backend format
     const normalizedStatus = normalizeStatus(task.status);
-    
-    console.log(`📝 Rendering task #${task.id}: "${task.title}" [${task.status} → ${normalizedStatus}]`);
     
     const card = document.createElement('div');
     card.className = `task-card ${normalizedStatus}`;
@@ -197,11 +195,10 @@ function renderTask(task) {
     title.textContent = task.title;
     card.appendChild(title);
     
-    // Task Metadata (Description & Assignee)
+    // Task Metadata
     const metaContainer = document.createElement('div');
     metaContainer.className = 'task-meta';
     
-    // Description
     if (task.description && task.description !== 'No description') {
         const description = document.createElement('div');
         description.className = 'task-description';
@@ -209,7 +206,6 @@ function renderTask(task) {
         metaContainer.appendChild(description);
     }
     
-    // Assignee
     if (task.assignee && task.assignee !== 'Unassigned') {
         const assignee = document.createElement('div');
         assignee.className = 'task-assignee';
@@ -217,31 +213,26 @@ function renderTask(task) {
         metaContainer.appendChild(assignee);
     }
     
-    // Only append meta container if it has content
     if (metaContainer.children.length > 0) {
         card.appendChild(metaContainer);
     }
     
-    // Action Buttons Container
+    // Action Buttons
     const actions = document.createElement('div');
     actions.className = 'task-actions';
     
-    // Status Buttons (FIXED: Now using normalized status)
     if (normalizedStatus === 'todo') {
         const startBtn = createButton('▶ Start', 'btn-start', () => {
-            console.log(`🚀 Starting task #${task.id}`);
             updateTaskStatus(task.id, 'inprogress');
         });
         actions.appendChild(startBtn);
     } else if (normalizedStatus === 'inprogress') {
         const completeBtn = createButton('✓ Complete', 'btn-complete', () => {
-            console.log(`✅ Completing task #${task.id}`);
             updateTaskStatus(task.id, 'done');
         });
         actions.appendChild(completeBtn);
     }
     
-    // Delete Button (always present)
     const deleteBtn = createButton('✕ Delete', 'btn-delete', () => {
         deleteTask(task.id);
     });
@@ -249,7 +240,6 @@ function renderTask(task) {
     
     card.appendChild(actions);
     
-    // Append to correct column
     const targetColumn = getColumnByStatus(normalizedStatus);
     if (targetColumn) targetColumn.appendChild(card);
 }
@@ -272,7 +262,6 @@ function getColumnByStatus(status) {
         'inprogress': inprogressColumn,
         'done': doneColumn
     };
-    
     return columns[status] || todoColumn;
 }
 
@@ -294,7 +283,6 @@ function updateTaskCounts(tasks) {
     if (inprogressCount) inprogressCount.textContent = counts.inprogress;
     if (doneCount) doneCount.textContent = counts.done;
     
-    // Show empty states
     if (counts.todo === 0) showEmptyState(todoColumn, 'No tasks yet');
     if (counts.inprogress === 0) showEmptyState(inprogressColumn, 'No tasks in progress');
     if (counts.done === 0) showEmptyState(doneColumn, 'No completed tasks');
