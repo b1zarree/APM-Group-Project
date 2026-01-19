@@ -29,7 +29,7 @@ body {
 .header {
     text-align: center;
     color: white;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     animation: fadeInDown 0.6s ease;
 }
 
@@ -44,6 +44,80 @@ body {
     font-size: 1.2rem;
     opacity: 0.95;
     font-weight: 300;
+}
+
+/* ====================================
+   ADD TASK FORM SECTION
+   ==================================== */
+.add-task-section {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.6s ease;
+}
+
+.task-input {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.task-input:focus {
+    outline: none;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.task-input::placeholder {
+    color: #9ca3af;
+}
+
+/* Button Styles */
+.btn {
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
+}
+
+.btn-icon {
+    font-size: 20px;
+    font-weight: bold;
 }
 
 /* ====================================
@@ -293,6 +367,16 @@ body {
         font-size: 1rem;
     }
     
+    .add-task-section {
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    
+    .task-input,
+    .btn {
+        width: 100%;
+    }
+    
     .kanban-board {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -350,6 +434,17 @@ body {
     from {
         opacity: 0;
         transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
     to {
         opacity: 1;

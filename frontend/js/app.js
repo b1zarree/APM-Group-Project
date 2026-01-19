@@ -1,222 +1,271 @@
 /* ====================================
-   KANBAN BOARD - FETCH & RENDER LOGIC
+   KANBAN BOARD - FULL LOGIC (FIXED)
    ==================================== */
 
 // API Base URL
 const API_URL = 'http://127.0.0.1:8000/tasks';
 
-// DOM Elements - Columns
+// DOM Elements
 const todoColumn = document.getElementById('todoColumn');
 const inprogressColumn = document.getElementById('inprogressColumn');
 const doneColumn = document.getElementById('doneColumn');
-
-// DOM Elements - Add Task Form
 const taskInput = document.getElementById('taskInput');
 const addTaskBtn = document.getElementById('addTaskBtn');
-
-// DOM Elements - Task Counts
 const todoCount = document.getElementById('todoCount');
 const inprogressCount = document.getElementById('inprogressCount');
 const doneCount = document.getElementById('doneCount');
 
 /* ====================================
-   INITIALIZATION
+   STATUS MAPPING (Backend ↔ Frontend)
    ==================================== */
 
-// Fetch and render tasks when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Kanban Board initialized');
-    fetchTasks();
-    
-    // Add event listeners
-    setupEventListeners();
-});
+// Backend uses: "To Do", "In Progress", "Done"
+// Frontend uses: "todo", "inprogress", "done"
 
-/* ====================================
-   EVENT LISTENERS
-   ==================================== */
+function normalizeStatus(backendStatus) {
+    const mapping = {
+        'To Do': 'todo',
+        'In Progress': 'inprogress',
+        'Done': 'done'
+    };
+    return mapping[backendStatus] || 'todo';
+}
 
-function setupEventListeners() {
-    // Add task button click
-    addTaskBtn.addEventListener('click', addNewTask);
-    
-    // Add task on Enter key press
-    taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            addNewTask();
-        }
-    });
-    
-    console.log('✅ Event listeners attached');
+function toBackendStatus(frontendStatus) {
+    const mapping = {
+        'todo': 'To Do',
+        'inprogress': 'In Progress',
+        'done': 'Done'
+    };
+    return mapping[frontendStatus] || 'To Do';
 }
 
 /* ====================================
-   FETCH TASKS FROM API
+   INITIALIZATION
    ==================================== */
 
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Kanban Board initialized');
+    fetchTasks();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', addNewTask);
+    }
+    
+    if (taskInput) {
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addNewTask();
+        });
+    }
+}
+
+/* ====================================
+   API FUNCTIONS
+   ==================================== */
+
+// 1. GET - Fetch All Tasks
 async function fetchTasks() {
     try {
-        console.log('📡 Fetching tasks from API...');
-        
         const response = await fetch(API_URL);
-        
-        // Check if response is OK
-        if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
         
         const tasks = await response.json();
-        console.log('✅ Tasks fetched successfully:', tasks);
+        console.log('📥 Tasks fetched:', tasks);
         
-        // Clear all columns before rendering
         clearAllColumns();
-        
-        // Render each task in the appropriate column
-        tasks.forEach(task => {
-            renderTask(task);
-        });
-        
-        // Update task counts
+        tasks.forEach(task => renderTask(task));
         updateTaskCounts(tasks);
         
     } catch (error) {
         console.error('❌ Error fetching tasks:', error);
-        showError('Failed to load tasks. Make sure the backend is running on http://127.0.0.1:8000');
+        showError('Backend connection failed. Is Port 8000 open?');
+    }
+}
+
+// 2. POST - Add New Task
+async function addNewTask() {
+    const title = taskInput.value.trim();
+    if (!title) {
+        alert("Please enter a task name!");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title })
+        });
+
+        if (response.ok) {
+            console.log('✅ Task added successfully');
+            taskInput.value = '';
+            fetchTasks();
+        } else {
+            console.error("❌ Add failed:", await response.text());
+        }
+    } catch (error) {
+        console.error('❌ Error adding task:', error);
+    }
+}
+
+// 3. DELETE - Delete Task
+async function deleteTask(id) {
+    if (!confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            console.log(`✅ Task #${id} deleted`);
+            fetchTasks();
+        } else {
+            console.error("❌ Delete failed:", await response.text());
+        }
+    } catch (error) {
+        console.error('❌ Error deleting task:', error);
+    }
+}
+
+// 4. PATCH - Update Task Status (FIXED!)
+async function updateTaskStatus(id, newFrontendStatus) {
+    // Convert frontend status to backend format
+    const backendStatus = toBackendStatus(newFrontendStatus);
+    
+    console.log(`🔄 Updating task #${id}: ${newFrontendStatus} → ${backendStatus}`);
+    
+    try {
+        // FIXED: Using PATCH method with query parameter
+        const response = await fetch(`${API_URL}/${id}/status?status=${encodeURIComponent(backendStatus)}`, {
+            method: 'PATCH'
+        });
+
+        if (response.ok) {
+            console.log(`✅ Status updated successfully`);
+            fetchTasks();
+        } else {
+            console.error("❌ Update failed:", await response.text());
+        }
+    } catch (error) {
+        console.error('❌ Error updating status:', error);
     }
 }
 
 /* ====================================
-   RENDER TASK CARD
+   RENDER FUNCTIONS
    ==================================== */
 
 function renderTask(task) {
-    // Create task card element
+    // Normalize status from backend format
+    const normalizedStatus = normalizeStatus(task.status);
+    
+    console.log(`📝 Rendering task #${task.id}: "${task.title}" [${task.status} → ${normalizedStatus}]`);
+    
     const card = document.createElement('div');
-    card.className = `task-card ${task.status}`;
+    card.className = `task-card ${normalizedStatus}`;
     card.setAttribute('data-id', task.id);
     
-    // Create task title
+    // Task Title
     const title = document.createElement('div');
     title.className = 'task-title';
     title.textContent = task.title;
+    card.appendChild(title);
     
-    // Create actions container
+    // Action Buttons Container
     const actions = document.createElement('div');
     actions.className = 'task-actions';
     
-    // Add status action buttons based on current status
-    if (task.status === 'todo') {
+    // Status Buttons (FIXED: Now using normalized status)
+    if (normalizedStatus === 'todo') {
         const startBtn = createButton('▶ Start', 'btn-start', () => {
             console.log(`🚀 Starting task #${task.id}`);
+            updateTaskStatus(task.id, 'inprogress');
         });
         actions.appendChild(startBtn);
-    } else if (task.status === 'inprogress') {
+    } else if (normalizedStatus === 'inprogress') {
         const completeBtn = createButton('✓ Complete', 'btn-complete', () => {
             console.log(`✅ Completing task #${task.id}`);
+            updateTaskStatus(task.id, 'done');
         });
         actions.appendChild(completeBtn);
     }
     
-    // Add delete button (always present)
+    // Delete Button (always present)
     const deleteBtn = createButton('✕ Delete', 'btn-delete', () => {
-        console.log(`🗑️ Deleting task #${task.id}`);
+        deleteTask(task.id);
     });
     actions.appendChild(deleteBtn);
     
-    // Assemble the card
-    card.appendChild(title);
     card.appendChild(actions);
     
-    // Add card to the appropriate column
-    const targetColumn = getColumnByStatus(task.status);
-    targetColumn.appendChild(card);
+    // Append to correct column
+    const targetColumn = getColumnByStatus(normalizedStatus);
+    if (targetColumn) targetColumn.appendChild(card);
 }
 
 /* ====================================
    HELPER FUNCTIONS
    ==================================== */
 
-// Create a button element
 function createButton(text, className, onClick) {
     const button = document.createElement('button');
     button.className = `task-btn ${className}`;
     button.textContent = text;
-    button.addEventListener('click', onClick);
+    button.onclick = onClick;
     return button;
 }
 
-// Get column element based on status
 function getColumnByStatus(status) {
-    switch (status) {
-        case 'todo':
-            return todoColumn;
-        case 'inprogress':
-            return inprogressColumn;
-        case 'done':
-            return doneColumn;
-        default:
-            console.warn(`⚠️ Unknown status: ${status}, defaulting to 'todo'`);
-            return todoColumn;
-    }
-}
-
-// Clear all columns
-function clearAllColumns() {
-    todoColumn.innerHTML = '';
-    inprogressColumn.innerHTML = '';
-    doneColumn.innerHTML = '';
-}
-
-// Update task count badges
-function updateTaskCounts(tasks) {
-    const counts = {
-        todo: 0,
-        inprogress: 0,
-        done: 0
+    const columns = {
+        'todo': todoColumn,
+        'inprogress': inprogressColumn,
+        'done': doneColumn
     };
     
-    // Count tasks by status
-    tasks.forEach(task => {
-        if (counts.hasOwnProperty(task.status)) {
-            counts[task.status]++;
-        }
-    });
-    
-    // Update count badges
-    todoCount.textContent = counts.todo;
-    inprogressCount.textContent = counts.inprogress;
-    doneCount.textContent = counts.done;
-    
-    // Show empty state messages if no tasks
-    if (counts.todo === 0) {
-        showEmptyState(todoColumn, 'No tasks yet');
-    }
-    if (counts.inprogress === 0) {
-        showEmptyState(inprogressColumn, 'No tasks in progress');
-    }
-    if (counts.done === 0) {
-        showEmptyState(doneColumn, 'No completed tasks');
-    }
+    return columns[status] || todoColumn;
 }
 
-// Show empty state message in a column
+function clearAllColumns() {
+    if (todoColumn) todoColumn.innerHTML = '';
+    if (inprogressColumn) inprogressColumn.innerHTML = '';
+    if (doneColumn) doneColumn.innerHTML = '';
+}
+
+function updateTaskCounts(tasks) {
+    const counts = { todo: 0, inprogress: 0, done: 0 };
+    
+    tasks.forEach(task => {
+        const normalized = normalizeStatus(task.status);
+        if (counts[normalized] !== undefined) counts[normalized]++;
+    });
+    
+    if (todoCount) todoCount.textContent = counts.todo;
+    if (inprogressCount) inprogressCount.textContent = counts.inprogress;
+    if (doneCount) doneCount.textContent = counts.done;
+    
+    // Show empty states
+    if (counts.todo === 0) showEmptyState(todoColumn, 'No tasks yet');
+    if (counts.inprogress === 0) showEmptyState(inprogressColumn, 'No tasks in progress');
+    if (counts.done === 0) showEmptyState(doneColumn, 'No completed tasks');
+}
+
 function showEmptyState(column, message) {
     const emptyDiv = document.createElement('div');
     emptyDiv.className = 'empty-state';
     emptyDiv.textContent = message;
-    column.appendChild(emptyDiv);
+    if (column) column.appendChild(emptyDiv);
 }
 
-// Show error message in console and UI
 function showError(message) {
     console.error('💥 ERROR:', message);
-    
-    // Show error in all columns
-    [todoColumn, inprogressColumn, doneColumn].forEach(column => {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'empty-state';
-        errorDiv.style.color = '#ef4444';
-        errorDiv.textContent = '⚠️ ' + message;
-        column.appendChild(errorDiv);
-    });
+    const errDiv = document.createElement('div');
+    errDiv.className = 'empty-state';
+    errDiv.style.color = '#ef4444';
+    errDiv.textContent = '⚠️ ' + message;
+    if (todoColumn) todoColumn.appendChild(errDiv);
 }
