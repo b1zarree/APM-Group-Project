@@ -10,6 +10,8 @@ const todoColumn = document.getElementById('todoColumn');
 const inprogressColumn = document.getElementById('inprogressColumn');
 const doneColumn = document.getElementById('doneColumn');
 const taskInput = document.getElementById('taskInput');
+const taskDescription = document.getElementById('taskDescription');
+const taskAssignee = document.getElementById('taskAssignee');
 const addTaskBtn = document.getElementById('addTaskBtn');
 const todoCount = document.getElementById('todoCount');
 const inprogressCount = document.getElementById('inprogressCount');
@@ -88,21 +90,40 @@ async function fetchTasks() {
 // 2. POST - Add New Task
 async function addNewTask() {
     const title = taskInput.value.trim();
+    const description = taskDescription.value.trim();
+    const assignee = taskAssignee.value.trim();
+    
+    // Validation
     if (!title) {
-        alert("Please enter a task name!");
+        alert("Please enter a task title!");
+        taskInput.focus();
         return;
     }
 
     try {
+        const requestBody = {
+            title: title,
+            description: description || "No description",
+            assignee: assignee || "Unassigned"
+        };
+        
+        console.log('📤 Creating task:', requestBody);
+        
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: title })
+            body: JSON.stringify(requestBody)
         });
 
         if (response.ok) {
             console.log('✅ Task added successfully');
+            
+            // Clear all form fields
             taskInput.value = '';
+            taskDescription.value = '';
+            taskAssignee.value = '';
+            taskInput.focus();
+            
             fetchTasks();
         } else {
             console.error("❌ Add failed:", await response.text());
@@ -175,6 +196,31 @@ function renderTask(task) {
     title.className = 'task-title';
     title.textContent = task.title;
     card.appendChild(title);
+    
+    // Task Metadata (Description & Assignee)
+    const metaContainer = document.createElement('div');
+    metaContainer.className = 'task-meta';
+    
+    // Description
+    if (task.description && task.description !== 'No description') {
+        const description = document.createElement('div');
+        description.className = 'task-description';
+        description.textContent = task.description;
+        metaContainer.appendChild(description);
+    }
+    
+    // Assignee
+    if (task.assignee && task.assignee !== 'Unassigned') {
+        const assignee = document.createElement('div');
+        assignee.className = 'task-assignee';
+        assignee.innerHTML = `<strong>${task.assignee}</strong>`;
+        metaContainer.appendChild(assignee);
+    }
+    
+    // Only append meta container if it has content
+    if (metaContainer.children.length > 0) {
+        card.appendChild(metaContainer);
+    }
     
     // Action Buttons Container
     const actions = document.createElement('div');

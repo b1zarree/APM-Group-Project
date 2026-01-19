@@ -50,35 +50,53 @@ body {
    ADD TASK FORM SECTION
    ==================================== */
 .add-task-section {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 30px;
-    max-width: 600px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     animation: fadeInUp 0.6s ease;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group:first-child {
+    grid-column: 1 / -1;
 }
 
 .task-input {
-    flex: 1;
-    padding: 14px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
     background: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     font-family: inherit;
+    resize: none;
 }
 
 .task-input:focus {
     outline: none;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .task-input::placeholder {
     color: #9ca3af;
+}
+
+.task-textarea {
+    min-height: 60px;
+    line-height: 1.5;
 }
 
 /* Button Styles */
@@ -87,19 +105,20 @@ body {
     font-size: 16px;
     font-weight: 600;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     font-family: inherit;
+    grid-column: 1 / -1;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
 .btn:active {
@@ -264,10 +283,43 @@ body {
 .task-title {
     font-size: 15px;
     color: #1f2937;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     word-wrap: break-word;
     line-height: 1.6;
-    font-weight: 500;
+    font-weight: 600;
+}
+
+/* Task Metadata (Description & Assignee) */
+.task-meta {
+    margin-bottom: 14px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.task-description {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.task-assignee {
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.task-assignee::before {
+    content: "👤";
+    font-size: 14px;
+}
+
+.task-assignee strong {
+    color: #4b5563;
+    font-weight: 600;
 }
 
 /* Task Actions */
@@ -368,8 +420,13 @@ body {
     }
     
     .add-task-section {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        padding: 20px;
         margin-bottom: 20px;
+    }
+    
+    .form-group:first-child {
+        grid-column: 1;
     }
     
     .task-input,

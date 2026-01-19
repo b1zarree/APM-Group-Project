@@ -1,16 +1,9 @@
 [
     {
-        "id": 1,
-        "title": "Media Manager I",
-        "description": "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi. Integer ac neque. Duis bibendum. Morbi non quam nec dui luctus rutrum. Nulla tellus.",
-        "status": "To Do",
-        "assignee": "Lynea"
-    },
-    {
         "id": 2,
         "title": "Quality Engineer",
         "description": "Ut tellus.",
-        "status": "In Progress",
+        "status": "Done",
         "assignee": "Waldo"
     },
     {
